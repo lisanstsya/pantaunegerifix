@@ -13,17 +13,16 @@ return new class extends Migration
     {
         Schema::create('pemerintah_profiles', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id'); // relasi ke tabel users
-            $table->string('foto')->nullable();     // foto pejabat
-            $table->string('nama');                 // nama pejabat
-            $table->string('jabatan');              // jabatan
-            $table->string('instansi');             // instansi
+            $table->unsignedBigInteger('user_id');
+            $table->string('foto')->nullable();
+            $table->string('nama');
+            $table->string('jabatan');
+            $table->string('instansi');
             $table->string('provinsi');
             $table->string('kota');
-            $table->string('no_hp');                // no HP
+            $table->string('no_hp');
             $table->timestamps();
 
-            // foreign key
             $table->foreign('user_id')
                   ->references('id')
                   ->on('users')

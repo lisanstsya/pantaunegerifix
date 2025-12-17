@@ -13,7 +13,6 @@ class RtRwProfile extends Model
         'kecamatan', 'kelurahan', 'no_hp', 'kabupaten_kota', 'provinsi'
     ];
 
-    // Relasi ke User
     public function user()
     {
         return $this->belongsTo(User::class);

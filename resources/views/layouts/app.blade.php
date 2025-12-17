@@ -6,6 +6,7 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
     <style>
         body {
@@ -17,11 +18,16 @@
         .content-wrapper {
             flex: 1;
         }
+
+        .full-width-img {
+            width: 100%;
+            max-height: 450px;
+            object-fit: cover;
+        }
     </style>
 </head>
 <body>
 
-    <!-- NAVBAR -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-danger">
         <div class="container">
             <a class="navbar-brand fw-bold" href="{{ route('home') }}">Pantau Negeri</a>
@@ -35,33 +41,31 @@
                     <li class="nav-item"><a class="nav-link" href="{{ route('laporan') }}">Laporan</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('tanggapan.index') }}">Tanggapan</a></li>
 
-                    @php $role = session('role', 'guest'); @endphp
+@php $role = session('role', 'guest'); @endphp
 
-                    @if($role == 'guest')
-                        <li class="nav-item"><a class="nav-link" href="{{ route('auth.pilih-role') }}">Masuk</a></li>
-                    @elseif($role == 'rt_rw')
-                        <li class="nav-item"><a class="nav-link" href="{{ route('lapor') }}">Lapor</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ route('logout') }}">Keluar</a></li>
-                    @elseif($role == 'pemerintah')
-                        <li class="nav-item"><a class="nav-link" href="{{ route('tanggapan.pemerintah') }}">Tanggap</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ route('logout') }}">Keluar</a></li>
-                    @else
-                        <li class="nav-item"><a class="nav-link" href="{{ route('logout') }}">Keluar</a></li>
-                    @endif
+@if($role == 'guest')
+    <li class="nav-item"><a class="nav-link" href="{{ route('auth.pilih-role') }}">Masuk</a></li>
+@elseif($role == 'masyarakat')
+    <li class="nav-item"><a class="nav-link" href="{{ route('logout') }}">Keluar</a></li>
+@elseif($role == 'rt_rw')
+    <li class="nav-item"><a class="nav-link" href="{{ route('lapor') }}">Lapor</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ route('logout') }}">Keluar</a></li>
+@elseif($role == 'pemerintah')
+    <li class="nav-item"><a class="nav-link" href="{{ route('tanggapan.pemerintah') }}">Tanggap</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ route('logout') }}">Keluar</a></li>
+@endif
 
                 </ul>
             </div>
         </div>
     </nav>
 
-    <!-- PAGE CONTENT -->
-    <div class="content-wrapper container mt-4">
+    <div class="content-wrapper container-fluid mt-4 px-4">
         @yield('content')
     </div>
 
-    <!-- FOOTER MERAH -->
     <footer class="bg-danger text-white py-5 mt-5">
-        <div class="container text-center">
+        <div class="container-fluid text-center">
             <h4 class="fw-bold">Pantau Negeri</h4>
             <p>Laporan masyarakat untuk Indonesia Adil dan Transparan.</p>
 
@@ -79,14 +83,11 @@
         </div>
     </footer>
 
-    <!-- FOOTER KECIL -->
     <footer class="bg-dark text-light py-3">
-        <div class="container text-center">
+        <div class="container-fluid text-center">
             <p class="mb-0">© {{ date('Y') }} Pantau Negeri - All Rights Reserved.</p>
         </div>
     </footer>
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
 </body>
 </html>

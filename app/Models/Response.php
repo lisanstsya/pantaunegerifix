@@ -21,25 +21,16 @@ class Response extends Model
         'pemerintah_id',
     ];
 
-    /**
-     * Relasi ke Tanggapan
-     */
     public function tanggapan()
     {
         return $this->belongsTo(Tanggapan::class, 'tanggapan_id');
     }
 
-    /**
-     * Relasi ke PemerintahProfile (pejabat yang memberi tanggapan)
-     */
     public function pemerintah()
     {
         return $this->belongsTo(PemerintahProfile::class, 'pemerintah_id');
     }
 
-    /**
-     * Accessor untuk URL foto bukti
-     */
     public function getFotoUrlAttribute()
     {
         return $this->foto ? asset('storage/' . $this->foto) : null;

@@ -13,12 +13,10 @@ class CheckLogin
      */
     public function handle(Request $request, Closure $next)
     {
-        // Kalau role belum dipilih di session, redirect ke halaman pilih role
         if (!session()->has('role')) {
             return redirect()->route('pilih-role');
         }
 
-        // Role sudah ada, lanjut request
         return $next($request);
     }
 }

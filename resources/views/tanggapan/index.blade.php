@@ -3,108 +3,116 @@
 @section('content')
 <div class="container mt-4">
 
-    {{-- Judul Halaman --}}
-    <h3 class="fw-bold text-center mb-4" style="color:#d32f2f;">Daftar Tanggapan</h3>
+    <h3 class="fw-bold text-center mb-4 text-danger">Daftar Tanggapan</h3>
 
-    {{-- Filter & Search --}}
-    <form method="GET" class="row g-2 mb-4 justify-content-center">
-        {{-- Search --}}
-        <div class="col-md-3">
-            <input type="text" name="search" class="form-control"
-                   placeholder="Cari tanggapan..." value="{{ request('search') }}">
-        </div>
+    <form method="GET" class="d-flex flex-wrap gap-2 justify-content-center mb-4">
 
-        {{-- Filter Waktu --}}
-        <div class="col-md-2">
-            <select name="filter_waktu" class="form-select">
-                <option value="">Semua Waktu</option>
-                <option value="hari_ini" {{ request('filter_waktu')=='hari_ini'?'selected':'' }}>Hari ini</option>
-                <option value="minggu_ini" {{ request('filter_waktu')=='minggu_ini'?'selected':'' }}>Minggu ini</option>
-                <option value="bulan_ini" {{ request('filter_waktu')=='bulan_ini'?'selected':'' }}>Bulan ini</option>
-                <option value="tahun_ini" {{ request('filter_waktu')=='tahun_ini'?'selected':'' }}>Tahun ini</option>
-                <option value="tahun_lalu" {{ request('filter_waktu')=='tahun_lalu'?'selected':'' }}>Tahun lalu</option>
-            </select>
-        </div>
+        <input type="text" name="search" class="form-control" style="width:220px"
+               placeholder="Cari tanggapan..." value="{{ request('search') }}">
 
-        <div class="col-md-2">
-            <button class="btn btn-danger w-100">Terapkan</button>
-        </div>
+        <select name="kategori" class="form-select" style="width:180px">
+            <option value="">Semua Kategori</option>
+            @foreach(['Infrastruktur','Kebersihan','Keamanan','Pelayanan Publik','Lingkungan','Lainnya'] as $kat)
+                <option value="{{ $kat }}" @selected(request('kategori')==$kat)>{{ $kat }}</option>
+            @endforeach
+        </select>
+
+        <select name="filter_waktu" class="form-select" style="width:160px">
+            <option value="">Semua Waktu</option>
+            <option value="hari_ini" @selected(request('filter_waktu')=='hari_ini')>Hari ini</option>
+            <option value="minggu_ini" @selected(request('filter_waktu')=='minggu_ini')>Minggu ini</option>
+            <option value="bulan_ini" @selected(request('filter_waktu')=='bulan_ini')>Bulan ini</option>
+            <option value="tahun_ini" @selected(request('filter_waktu')=='tahun_ini')>Tahun ini</option>
+            <option value="tahun_lalu" @selected(request('filter_waktu')=='tahun_lalu')>Tahun lalu</option>
+        </select>
+
+        <button class="btn btn-danger px-4">Terapkan</button>
     </form>
 
-    {{-- Card List --}}
     <div class="row g-3">
-        @forelse($tanggapans as $tanggapan)
+        @forelse($tanggapans->take(8) as $tanggapan)
             @php
                 $laporan = $tanggapan->laporan;
-                $fotoPelapor = $laporan?->user?->rtRwProfile?->foto;
-                $fotoPejabat = $tanggapan->pemerintahProfile?->foto;
-                $fotoPelaporFullPath = $fotoPelapor ? 'public/'.$fotoPelapor : null;
-                $fotoPejabatFullPath = $fotoPejabat ?? null;
+                $rtRw = $laporan?->user?->rtRwProfile;
+
+                // Foto pelapor
+                $fotoPelapor = $rtRw && $rtRw->foto && \Illuminate\Support\Facades\Storage::disk('public')->exists($rtRw->foto)
+                                ? asset('storage/'.$rtRw->foto)
+                                : asset('images/default-avatar.png');
+
+                // Foto pejabat
+                $pemerintah = $tanggapan->pemerintahProfile;
+                $fotoPejabat = $pemerintah && $pemerintah->foto && \Illuminate\Support\Facades\Storage::disk('public')->exists($pemerintah->foto)
+                               ? asset('storage/'.$pemerintah->foto)
+                               : asset('images/default-avatar.png');
+
+                $tanggalTanggapan = \Carbon\Carbon::parse($tanggapan->tanggal_selesai ?? $tanggapan->created_at)->format('d M Y');
+
+                // Data pelapor & pejabat
+                $provinsiPelapor = $rtRw?->provinsi ?? '-';
+                $jabatanPejabat = $pemerintah?->jabatan ?? '-';
+                $instansiPejabat = $pemerintah?->instansi ?? '-';
+                $provinsiPejabat = $pemerintah?->provinsi ?? '-';
             @endphp
 
-            <div class="col-md-3 col-sm-6"> {{-- 4 kolom per row --}}
-                <div class="card shadow-sm border-0 rounded-4 h-100 p-2">
+ <div class="col-lg-3 col-md-6 col-sm-12 d-flex">
+    <div class="card shadow-sm border-0 rounded-4 flex-fill d-flex flex-column overflow-hidden">
 
-                    {{-- Foto Tanggapan --}}
-                    @if($tanggapan->foto)
-                        <a href="{{ asset('storage/' . $tanggapan->foto) }}" target="_blank">
-                            <img src="{{ asset('storage/' . $tanggapan->foto) }}" 
-                                 class="img-fluid rounded-top mb-2" 
-                                 style="width:100%; height:150px; object-fit:cover;">
-                        </a>
-                    @else
-                        <div class="bg-light rounded-top mb-2" style="height:150px;"></div>
-                    @endif
+        <div class="overflow-hidden" style="height:180px;">
+            @if($tanggapan->foto)
+                <a href="{{ asset('storage/' . $tanggapan->foto) }}" target="_blank">
+                    <img src="{{ asset('storage/' . $tanggapan->foto) }}" 
+                         class="img-fluid w-100 h-100" 
+                         style="object-fit:cover;">
+                </a>
+            @else
+                <div class="bg-light w-100 h-100"></div>
+            @endif
+        </div>
 
-                    {{-- Judul Laporan --}}
-                    <h6 class="fw-bold mb-2" style="font-size:0.95rem; min-height:40px; color:#d32f2f;">
-                        {{ $laporan->judul ?? 'Laporan tidak ditemukan' }}
-                    </h6>
+        <div class="card-body d-flex flex-column p-3">
 
-                    {{-- Foto Pelapor dan Petugas --}}
-                    <div class="mb-2">
-                        <div class="d-flex align-items-center mb-1">
-                            <img src="{{ $fotoPelaporFullPath && \Illuminate\Support\Facades\Storage::disk('public')->exists($fotoPelaporFullPath) 
-                                        ? asset('storage/'.$fotoPelaporFullPath) 
-                                        : asset('images/default-avatar.png') }}" 
-                                 class="rounded-circle me-2" 
-                                 style="width:24px; height:24px; object-fit:cover;">
-                            <span class="small fw-semibold">Pelapor:</span>
-                            <span class="ms-1 small">{{ $laporan?->user?->name ?? 'Anonim' }}</span>
-                        </div>
+            <h6 class="fw-bold mb-1" style="font-size:0.95rem;">
+                {{ $laporan->judul ?? 'Laporan tidak ditemukan' }}
+            </h6>
 
-                        <div class="d-flex align-items-center">
-                            <img src="{{ $fotoPejabatFullPath && \Illuminate\Support\Facades\Storage::disk('public')->exists($fotoPejabatFullPath)
-                                        ? asset('storage/'.$fotoPejabatFullPath) 
-                                        : asset('images/default-avatar.png') }}" 
-                                 class="rounded-circle me-2" 
-                                 style="width:24px; height:24px; object-fit:cover;">
-                            <span class="small fw-semibold">Petugas:</span>
-                            <span class="ms-1 small">
-                                {{ $tanggapan->pemerintah?->name ?? $tanggapan->petugas ?? '-' }}
-                                ({{ $tanggapan->pemerintah?->jabatan ?? $tanggapan->jabatan ?? '-' }})
-                            </span>
-                        </div>
-                    </div>
+            <p class="text-secondary small mb-2"
+               style="-webkit-line-clamp:3; display:-webkit-box; -webkit-box-orient:vertical; overflow:hidden;">
+                "{{ $tanggapan->isi }}"
+            </p>
 
-                    {{-- Isi Tanggapan --}}
-                    <p class="text-secondary fst-italic small mb-2" style="-webkit-line-clamp:3; display:-webkit-box; -webkit-box-orient:vertical; overflow:hidden;">
-                        "{{ $tanggapan->isi }}"
-                    </p>
-
-                    {{-- Footer --}}
-                    <div class="d-flex justify-content-between align-items-center mt-auto">
-                        <a href="{{ route('laporan.show', $laporan?->id ?? 0) }}" class="btn btn-sm btn-danger">Lihat Laporan</a>
-                        <small class="text-muted" style="font-size:0.75rem;">
-                            {{ $tanggapan->tanggal_selesai ?? $tanggapan->created_at->format('d M Y') }}
-                        </small>
-                    </div>
-
+            <div class="d-flex align-items-center mb-2">
+                <img src="{{ $fotoPelapor }}" class="rounded-circle me-2 border" width="32" height="32" style="object-fit:cover;">
+                <div class="small text-muted">
+                    {{ $laporan->user?->name ?? 'Anonim' }} | {{ $provinsiPelapor }}
                 </div>
             </div>
+
+            <div class="d-flex align-items-center mb-3">
+                <img src="{{ $fotoPejabat }}" class="rounded-circle me-2 border" width="32" height="32" style="object-fit:cover;">
+                <div class="small text-muted">
+                    {{ $jabatanPejabat }} | {{ $instansiPejabat }} | {{ $provinsiPejabat }}
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mt-auto">
+                <a href="{{ route('laporan.show', $laporan?->id ?? 0) }}" 
+                   class="btn btn-sm btn-danger">
+                    Lihat Laporan
+                </a>
+                <small class="text-muted d-flex align-items-center">
+                    <i class="bi bi-calendar-event me-1"></i>
+                    {{ $tanggalTanggapan }}
+                </small>
+            </div>
+
+        </div>
+    </div>
+</div>
+
         @empty
             <div class="col-12 text-center py-5">
-                <p class="text-muted small">Belum ada tanggapan saat ini.</p>
+                <p class="text-muted">Belum ada tanggapan saat ini.</p>
             </div>
         @endforelse
     </div>

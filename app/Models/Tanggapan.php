@@ -20,13 +20,15 @@ class Tanggapan extends Model
         'jabatan'
     ];
 
-    // Relasi ke laporan
+protected $casts = [
+    'tanggal_selesai' => 'datetime',
+];
+
     public function laporan()
     {
         return $this->belongsTo(Laporan::class, 'laporan_id');
     }
 
-    // Relasi ke user pemerintah
     public function pemerintah()
     {
         return $this->belongsTo(User::class, 'pemerintah_id');
@@ -36,4 +38,6 @@ class Tanggapan extends Model
     {
         return $this->belongsTo(\App\Models\PemerintahProfile::class, 'pemerintah_id', 'user_id');
     }
+
+    
 }

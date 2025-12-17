@@ -19,14 +19,15 @@ class HomeController extends Controller
         // Statistik untuk dashboard
         $jumlahLaporan = Laporan::count();
         $jumlahTanggapan = Tanggapan::count();
-        $jumlahLaporanDitanggapi = Laporan::where('status', '!=', 'pending')->count();
+        $jumlahLaporanBaru = Laporan::where('status', 'baru')->count();
+        
+return view('home', compact(
+    'laporanTerbaru', 
+    'tanggapanTerbaruAll',
+    'jumlahLaporan',
+    'jumlahTanggapan',
+    'jumlahLaporanBaru'
+));
 
-        return view('home', compact(
-            'laporanTerbaru', 
-            'tanggapanTerbaruAll',
-            'jumlahLaporan',
-            'jumlahTanggapan',
-            'jumlahLaporanDitanggapi'
-        ));
     }
 }

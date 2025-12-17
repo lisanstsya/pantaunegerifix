@@ -6,6 +6,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RtRwController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\TanggapanController;
+use App\Http\Middleware\CheckRtRwProfile;
+
 
 // =========================
 // PUBLIC ROUTES
@@ -55,12 +57,19 @@ Route::middleware(['auth'])->group(function () {
     // -------------------------
     // RT/RW
     // -------------------------
+Route::middleware(['auth'])->group(function () {
+
+    // Halaman Buat Laporan
     Route::get('/lapor', [LaporanController::class, 'create'])->name('lapor');
+
+    // Submit Laporan
     Route::post('/lapor', [LaporanController::class, 'store'])->name('lapor.store');
 
-    Route::delete('/laporan/{id}/delete', [LaporanController::class, 'destroy'])
-        ->middleware('checkRtRwProfile')
-        ->name('laporan.destroy');
+});
+    Route::delete('/laporan/{laporan}', [LaporanController::class, 'destroy'])
+    ->middleware(['auth', 'checkRtRwProfile'])
+    ->name('laporan.destroy');
+
 
     // -------------------------
     // PEMERINTAH
@@ -75,7 +84,48 @@ Route::middleware(['auth'])->group(function () {
 
         Route::post('/laporan/tanggap/{laporan}', [TanggapanController::class, 'store'])
             ->name('tanggap.store');
-            
+        
+        Route::middleware(['auth', 'checkPemerintahProfile'])->group(function () {
+            Route::delete('/tanggapan/{tanggapan}', [TanggapanController::class, 'destroy'])
+                ->name('tanggapan.destroy');
+        });
+
     });
 
+    Route::middleware(['checkPemerintahProfile'])->group(function () {
+
+    Route::get('/tanggapan/pemerintah', [TanggapanController::class, 'pemerintahIndex'])
+        ->name('tanggapan.pemerintah');
+
+    Route::get('/laporan/tanggap/{laporan}', [TanggapanController::class, 'create'])
+        ->name('tanggap.create');
+
+    Route::post('/laporan/tanggap/{laporan}', [TanggapanController::class, 'store'])
+        ->name('tanggap.store');
+
+    // -------------------------
+    // EDIT & UPDATE tanggapan
+    // -------------------------
+    Route::get('/tanggapan/{tanggapan}/edit', [TanggapanController::class, 'edit'])
+        ->name('tanggapan.edit');
+
+Route::put('/tanggapan/{tanggapan}', [TanggapanController::class, 'update'])
+    ->name('tanggapan.update')
+    ->middleware(['auth', 'checkPemerintahProfile']);
+
+    Route::delete('/tanggapan/{tanggapan}', [TanggapanController::class, 'destroy'])
+        ->name('tanggapan.destroy');
 });
+
+Route::middleware([CheckRtRwProfile::class])->group(function () {
+    Route::get('/laporan/{laporan}/edit', [App\Http\Controllers\LaporanController::class, 'edit'])
+        ->name('laporan.edit');
+
+    Route::put('/laporan/{laporan}', [App\Http\Controllers\LaporanController::class, 'update'])
+        ->name('laporan.update');
+});
+
+
+});
+
+

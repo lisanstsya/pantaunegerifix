@@ -35,7 +35,6 @@ class PemerintahController extends Controller
             'password' => 'required|string|confirmed|min:6',
         ]);
 
-        // Simpan user
         $user = \App\Models\User::create([
             'name' => $request->nama,
             'email' => $request->email,
@@ -43,10 +42,8 @@ class PemerintahController extends Controller
             'role' => 'pemerintah', // pastikan kolom ada dan fillable
         ]);
 
-        // Login user setelah registrasi
         \Auth::login($user);
 
-        // Simpan profile pemerintah
         $fotoPath = $request->hasFile('foto') 
             ? $request->file('foto')->store('pemerintah', 'public') 
             : null;
@@ -62,7 +59,6 @@ class PemerintahController extends Controller
             'foto' => $fotoPath,
         ]);
 
-        // Redirect ke halaman login atau dashboard
         return redirect()->route('login.pemerintah.form')
             ->with('success', 'Registrasi berhasil! Silakan login.');
     }
@@ -101,11 +97,11 @@ public function laporan(Request $request)
     {
         $laporan = Laporan::findOrFail($id);
 
-        $data = $request->validate([
-            'komentar' => 'required|string',
-            'tanggal_selesai' => 'nullable|date',
-            'foto' => 'nullable|image|mimes:jpg,png,jpeg|max:2048'
-        ]);
+$data = $request->validate([
+    'komentar' => 'required|string',
+    'tanggal_selesai' => 'nullable|date|before_or_equal:today',
+    'foto' => 'nullable|image|mimes:jpg,png,jpeg|max:2048'
+]);
 
         if ($request->hasFile('foto')) {
             $data['foto'] = $request->file('foto')->store('responses', 'public');

@@ -18,7 +18,7 @@ class AuthController extends Controller
 
     public function pilihRoleProcess(Request $request)
     {
-        $role = $request->role; // ambil role dari form GET
+        $role = $request->role;
 
         if ($role === 'rt_rw') {
             return redirect()->route('login.rt_rw.form');
@@ -29,9 +29,9 @@ class AuthController extends Controller
         }
 
 if ($role === 'masyarakat') {
-    return redirect()->route('home'); // langsung ke halaman beranda publik
+    session(['role' => 'masyarakat']);
+    return redirect()->route('home');
 }
-
 
         return redirect()->route('auth.pilih-role')
                          ->with('error', 'Pilih role tidak valid.');
@@ -57,7 +57,7 @@ if ($role === 'masyarakat') {
             }
 
             session(['role' => 'rt_rw']);
-            return redirect()->route('dashboard'); // dashboard utama
+            return redirect()->route('dashboard');
         }
 
         return back()->with('error', 'Email atau password salah');
@@ -83,7 +83,7 @@ if ($role === 'masyarakat') {
             }
 
             session(['role' => 'pemerintah']);
-            return redirect()->route('dashboard'); // dashboard utama
+            return redirect()->route('dashboard');
         }
 
         return back()->with('error', 'Email atau password salah');
@@ -121,15 +121,12 @@ if ($role === 'masyarakat') {
         $data['role'] = 'rt_rw';
         $data['password'] = bcrypt($request->password);
 
-        // Upload foto profil jika ada
        if ($request->hasFile('foto')) {
             $file = $request->file('foto');
             $filename = time().'_'.$file->getClientOriginalName();
-            $path = $file->storeAs('foto_rt_rw', $filename, 'public'); // pastikan 'public'
+            $path = $file->storeAs('foto_rt_rw', $filename, 'public');
             $data['foto'] = $path;
         }
-
-
 
         User::create($data);
 
@@ -146,51 +143,48 @@ if ($role === 'masyarakat') {
         return view('auth.register-pemerintah');
     }
 
-public function registerPemerintah(Request $request)
-{
-    $request->validate([
-        'name'          => 'required|string|max:255',
-        'jabatan'       => 'required|string|max:255',
-        'instansi'      => 'required|string|max:255',
-        'kota'          => 'required|string|max:255',
-        'provinsi'      => 'required|string|max:255',
-        'no_hp'         => 'required|string|max:20',
-        'email'         => 'required|email|unique:users,email',
-        'password'      => 'required|string|confirmed|min:6',
-        'profile_photo' => 'required|image|mimes:jpg,jpeg,png|max:2048',
-    ]);
+    public function registerPemerintah(Request $request)
+    {
+        $request->validate([
+            'name'          => 'required|string|max:255',
+            'jabatan'       => 'required|string|max:255',
+            'instansi'      => 'required|string|max:255',
+            'kota'          => 'required|string|max:255',
+            'provinsi'      => 'required|string|max:255',
+            'no_hp'         => 'required|string|max:20',
+            'email'         => 'required|email|unique:users,email',
+            'password'      => 'required|string|confirmed|min:6',
+            'profile_photo' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
 
-    // Upload foto profil
-    $fotoPath = null;
-    if ($request->hasFile('profile_photo')) {
-        $file = $request->file('profile_photo');
-        $filename = time() . '_' . $file->getClientOriginalName();
-        $fotoPath = $file->storeAs('pemerintah', $filename, 'public');
+        $fotoPath = null;
+        if ($request->hasFile('profile_photo')) {
+            $file = $request->file('profile_photo');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $fotoPath = $file->storeAs('pemerintah', $filename, 'public');
+        }
+
+        $user = \App\Models\User::create([
+            'name'     => $request->name,
+            'email'    => $request->email,
+            'password' => bcrypt($request->password),
+            'role'     => 'pemerintah',
+        ]);
+
+        \App\Models\PemerintahProfile::create([
+            'user_id' => $user->id,
+            'nama'    => $request->name,
+            'jabatan' => $request->jabatan,
+            'instansi'=> $request->instansi,
+            'kota'    => $request->kota,
+            'provinsi'=> $request->provinsi,
+            'no_hp'   => $request->no_hp,
+            'foto'    => $fotoPath,
+        ]);
+
+        return redirect()->route('login.pemerintah.form')
+                        ->with('success', 'Registrasi Pemerintah berhasil! Silakan login.');
     }
-
-    // Simpan User
-    $user = \App\Models\User::create([
-        'name'     => $request->name,
-        'email'    => $request->email,
-        'password' => bcrypt($request->password),
-        'role'     => 'pemerintah',
-    ]);
-
-    // Simpan Profile Pemerintah
-    \App\Models\PemerintahProfile::create([
-        'user_id' => $user->id,
-        'nama'    => $request->name,
-        'jabatan' => $request->jabatan,
-        'instansi'=> $request->instansi,
-        'kota'    => $request->kota,
-        'provinsi'=> $request->provinsi,
-        'no_hp'   => $request->no_hp,
-        'foto'    => $fotoPath,
-    ]);
-
-    return redirect()->route('login.pemerintah.form')
-                     ->with('success', 'Registrasi Pemerintah berhasil! Silakan login.');
-}
 
 
     /* =========================================================

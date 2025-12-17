@@ -9,10 +9,11 @@ class Laporan extends Model
 {
     use HasFactory;
 
+
     protected $fillable = [
-        'user_id', 'judul', 'isi', 'media', 'waktu_laporan',
-        'lokasi_detail', 'kecamatan', 'kelurahan', 'kabupaten',
-        'kota', 'permintaan_solusi', 'status'
+        'user_id', 'judul', 'isi', 'media', 'tanggal_kejadian',
+        'lokasi_detail', 'kecamatan', 'kelurahan', 'kabupaten_kota',
+        'permintaan_solusi', 'status', 'kategori'
     ];
 
     public function user()

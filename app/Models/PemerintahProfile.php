@@ -20,26 +20,16 @@ class PemerintahProfile extends Model
         'foto'
     ];
 
-
-    /**
-     * Relasi ke user login
-     */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Relasi ke semua tanggapan yang dibuat pejabat ini
-     */
     public function responses()
     {
         return $this->hasMany(Response::class, 'pemerintah_id');
     }
 
-    /**
-     * Accessor untuk URL foto profil
-     */
     public function getFotoUrlAttribute()
     {
         return $this->foto ? asset('storage/' . $this->foto) : null;

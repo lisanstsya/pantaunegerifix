@@ -1,153 +1,292 @@
 @extends('layouts.app')
 
+@push('styles')
+<style>
+    .card-wow {
+        border-radius: 1.25rem;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        transition: all .25s ease;
+        overflow: hidden;
+        background: #fff;
+    }
+
+    .card-wow:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 18px 40px rgba(211,47,47,0.25);
+    }
+
+    .img-hover {
+        transition: transform .35s ease;
+    }
+
+    .card-wow:hover .img-hover {
+        transform: scale(1.05);
+    }
+
+    .badge-wow {
+        padding: .45em .75em;
+        font-weight: 600;
+        border-radius: 999px;
+        font-size: .75rem;
+    }
+
+    .section-divider {
+        width: 80px;
+        height: 4px;
+        background: #d32f2f;
+        border-radius: 4px;
+        margin: 12px auto 0;
+    }
+</style>
+@endpush
+
 @section('content')
 
-<!-- Hero Section -->
+<!-- HERO -->
 <div class="position-relative w-100" style="height:500px; overflow:hidden;">
     <div style="
         background-image: url('{{ asset('images/background.jpg') }}');
         background-size: cover;
         background-position: center;
-        background-repeat: no-repeat;
         height: 100%;
         width: 100vw;
         position: absolute;
-        top: 0;
-        left: 0;
+        inset: 0;
     "></div>
 
     <div style="
         position: absolute;
-        top: 0; 
-        left: 0;
-        width: 100%; 
-        height: 100%;
-        background-color: rgba(0,0,0,0.4);
+        inset: 0;
+        background-color: rgba(0,0,0,0.45);
     "></div>
 
     <div class="d-flex flex-column justify-content-center align-items-center text-center text-white position-relative h-100">
-        <h1 class="display-3 fw-bold" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.6);">
+        <h1 class="display-3 fw-bold">
             Pantau Negeri
         </h1>
-        <p class="lead fw-semibold" style="font-size:1.5rem; text-shadow: 1px 1px 3px rgba(0,0,0,0.6);">
+        <p class="lead fw-semibold fs-4">
             Untuk Indonesia yang Adil dan Transparan
         </p>
 
         @if(Auth::check() && session('role') === 'rt_rw')
-            <a href="{{ route('lapor') }}" class="btn btn-danger btn-lg mt-3 shadow-sm">
-                Buat Laporan Baru
+            <a href="{{ route('lapor') }}" class="btn btn-danger btn-lg mt-3 px-4 shadow">
+                <i class="bi bi-megaphone-fill me-1"></i> Buat Laporan Baru
             </a>
         @endif
     </div>
 </div>
 
-<div class="my-4"></div>
-
-<!-- Dashboard Statistik -->
-<section class="py-5" style="background-color:#ffffff;">
+<section class="py-4 bg-white text-dark mt-5">
     <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="fw-bold" style="color:#d32f2f;">Dashboard Real Time</h2>
-            <p class="text-muted">Memantau laporan dan tanggapan terbaru secara langsung</p>
+        <div class="text-center mb-4">
+            <h2 class="fw-bold" style="color:#d32f2f;">Tentang Pantau Negeri</h2>
+            <p class="mx-auto text-dark" style="max-width:600px; font-size:1.1rem;">
+                Pantau Negeri adalah platform digital untuk memudahkan masyarakat dalam melaporkan 
+                isu-isu di suatu daerah yang membutuhkan perhatian pemerintah dengan perantara RT/RW kepada pemerintah agar lebih mudah untuk ditindaklanjuti.
+            </p>
         </div>
-
-        <div class="row text-center g-4">
-            <div class="col-md-4">
-                <div class="card shadow-sm border-0 rounded-4 py-4 px-3">
-                    <h3 class="fw-bold display-6 text-primary">{{ $jumlahLaporan }}</h3>
-                    <p class="mb-0 text-muted">Jumlah Laporan</p>
+        <div class="row text-center">
+            <div class="col-md-4 mb-4">
+                <div class="p-4 border rounded shadow-sm h-100">
+                    <i class="bi bi-person-fill mb-3" style="font-size:2rem; color:#d32f2f;"></i>
+                    <h5 class="fw-bold text-dark">Masyarakat</h5>
+                    <p class="text-dark">Memantau progress pemerintah berdasarkan laporan yang telah dibuat.</p>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card shadow-sm border-0 rounded-4 py-4 px-3">
-                    <h3 class="fw-bold display-6 text-success">{{ $jumlahTanggapan }}</h3>
-                    <p class="mb-0 text-muted">Jumlah Tanggapan</p>
+            <div class="col-md-4 mb-4">
+                <div class="p-4 border rounded shadow-sm h-100">
+                    <i class="bi bi-shield-fill-check mb-3" style="font-size:2rem; color:#d32f2f;"></i>
+                    <h5 class="fw-bold text-dark">RT/RW</h5>
+                    <p class="text-dark">Membuat laporan kepada pemerintah.</p>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card shadow-sm border-0 rounded-4 py-4 px-3">
-                    <h3 class="fw-bold display-6 text-warning">{{ $jumlahLaporanDitanggapi }}</h3>
-                    <p class="mb-0 text-muted">Laporan Ditanggapi</p>
+            <div class="col-md-4 mb-4">
+                <div class="p-4 border rounded shadow-sm h-100">
+                    <i class="bi bi-building mb-3" style="font-size:2rem; color:#d32f2f;"></i>
+                    <h5 class="fw-bold text-dark">Pemerintah</h5>
+                    <p class="text-dark">Menanggapi laporan dan memberikan solusi.</p>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- 4 Laporan Terbaru -->
 <section class="py-5">
+    <div class="container text-center">
+        <h2 class="fw-bold text-danger">Dashboard Real Time</h2>
+        <div class="section-divider"></div>
+
+        <div class="row mt-4 g-4">
+            @foreach([
+                ['label'=>'Jumlah Laporan','value'=>$jumlahLaporan,'color'=>'primary'],
+                ['label'=>'Jumlah Tanggapan','value'=>$jumlahTanggapan,'color'=>'success'],
+                ['label'=>'Laporan Baru','value'=>$jumlahLaporanBaru,'color'=>'warning']
+            ] as $stat)
+            <div class="col-md-4">
+                <div class="card card-wow py-4">
+                    <h3 class="display-6 fw-bold text-{{ $stat['color'] }}">
+                        {{ $stat['value'] }}
+                    </h3>
+                    <p class="text-muted mb-0">{{ $stat['label'] }}</p>
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+</section>
+
+<section class="py-5 bg-white">
     <div class="container">
-        <h2 class="fw-bold mb-4 text-center" style="color:#d32f2f;">4 Laporan Terbaru</h2>
-        <div class="row g-4">
+        <h2 class="fw-bold text-danger text-center">4 Laporan Terbaru</h2>
+        <div class="section-divider"></div>
+
+        <div class="row mt-4 g-4">
             @forelse($laporanTerbaru as $laporan)
+                @php
+                    $rtRw = $laporan->user?->rtRwProfile;
+                    $fotoPelapor = $rtRw && $rtRw->foto
+                        ? asset('storage/'.$rtRw->foto)
+                        : asset('images/default-avatar.png');
+                @endphp
+
                 <div class="col-md-3">
-                    <a href="{{ route('laporan.show', $laporan->id) }}" class="text-decoration-none text-dark">
-                        <div class="card shadow-sm border-0 h-100 rounded-4 overflow-hidden" style="font-family: 'Inter', sans-serif; font-size:0.9rem;">
+                    <a href="{{ route('laporan.show',$laporan->id) }}" class="text-decoration-none text-dark">
+                        <div class="card card-wow h-100">
                             @if($laporan->media)
-                                <img src="{{ asset('storage/'.$laporan->media) }}" class="card-img-top" style="height:180px; object-fit:cover;">
+                                <img src="{{ asset('storage/'.$laporan->media) }}"
+                                     class="img-hover"
+                                     style="height:180px; object-fit:cover;">
                             @else
                                 <div class="bg-light" style="height:180px;"></div>
                             @endif
-                            <div class="card-body">
-                                <h6 class="fw-bold mb-2" style="min-height:20px;">{{ Str::limit($laporan->judul, 50) }}</h6>
-                                <p class="small mb-2">{{ Str::limit($laporan->isi, 70) }}</p>
 
-                                <div class="d-flex align-items-center mb-1">
-                                    <span class="small fw-semibold">Pelapor:</span>
-                                    <span class="ms-1">{{ $laporan->user?->name ?? '-' }}</span>
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-2">
+                                    <img src="{{ $fotoPelapor }}" class="rounded-circle me-2"
+                                         width="32" height="32" style="object-fit:cover">
+                                    <div class="small">
+                                        <div class="fw-semibold">
+                                            {{ $laporan->user?->name ?? '-' }}
+                                        </div>
+                                        <div class="text-muted">
+                                            {{ $rtRw->provinsi ?? '-' }}
+                                        </div>
+                                    </div>
                                 </div>
-<span class="small fw-semibold">Tanggal:</span> {{ \Carbon\Carbon::parse($laporan->waktu_laporan)->format('d M Y') }}
+
+                                <h6 class="fw-bold">
+                                    {{ Str::limit($laporan->judul,45) }}
+                                </h6>
+
+                                <p class="small text-muted">
+                                    {{ Str::limit($laporan->isi,60) }}
+                                </p>
+
+                                <div class="d-flex justify-content-between">
+                                    <span class="badge badge-wow
+                                        {{ $laporan->status === 'baru' ? 'bg-warning text-dark' : 'bg-success' }}">
+                                        {{ ucfirst($laporan->status) }}
+                                    </span>
+                                    <small class="text-muted">
+                                        <i class="bi bi-calendar-event me-1"></i>
+                                        {{ \Carbon\Carbon::parse($laporan->waktu_laporan)->format('d M Y') }}
+                                    </small>
+                                </div>
                             </div>
                         </div>
                     </a>
                 </div>
             @empty
-                <div class="col-12 text-center">
-                    <p class="text-muted">Belum ada laporan saat ini.</p>
-                </div>
+                <div class="text-center text-muted">Belum ada laporan.</div>
             @endforelse
         </div>
     </div>
 </section>
 
-<!-- 4 Tanggapan Terbaru -->
-<section class="py-5 bg-white">
+<section class="py-5">
     <div class="container">
-        <h2 class="fw-bold mb-4 text-center" style="color:#d32f2f;">4 Tanggapan Terbaru</h2>
-        <div class="row g-4">
-            @forelse($tanggapanTerbaruAll as $tanggapan)
-                @if($tanggapan->laporan)
-                    <div class="col-md-3">
-                        <a href="{{ route('laporan.show', $tanggapan->laporan_id) }}" class="text-decoration-none text-dark">
-                            <div class="card shadow-sm border-0 h-100 rounded-4 overflow-hidden" style="font-family: 'Inter', sans-serif; font-size:0.9rem;">
-                                @if($tanggapan->foto)
-                                    <img src="{{ asset('storage/'.$tanggapan->foto) }}" class="card-img-top" style="height:180px; object-fit:cover;">
-                                @else
-                                    <div class="bg-light" style="height:180px;"></div>
-                                @endif
-                                <div class="card-body">
-                                    <h6 class="fw-bold mb-2" style="min-height:20px;">{{ Str::limit($tanggapan->laporan->judul, 50) }}</h6>
-                                    <p class="text-secondary fst-italic mb-2" style="font-size:0.85rem;">{{ Str::limit($tanggapan->isi, 70) }}</p>
+        <h2 class="fw-bold text-danger text-center">4 Tanggapan Terbaru</h2>
+        <div class="section-divider"></div>
 
-                                    <div class="d-flex align-items-center mb-1">
-                                        <span class="small fw-semibold">Ditanggapi oleh:</span>
-                                        <span class="ms-1">{{ $tanggapan->petugas ?? '-' }}</span>
-                                    </div>
+        <div class="row mt-4 g-4">
+@forelse($tanggapanTerbaruAll->take(4) as $tanggapan)
+    @if($tanggapan->laporan)
+        @php
+            $laporan = $tanggapan->laporan;
+            $rtRw = $laporan->user?->rtRwProfile;
+            $provinsiPelapor = $rtRw?->provinsi ?? '-';
+            $pejabat = $tanggapan->pemerintahProfile;
+            $fotoPejabat = $pejabat && $pejabat->foto && \Illuminate\Support\Facades\Storage::disk('public')->exists($pejabat->foto)
+                ? asset('storage/'.$pejabat->foto)
+                : asset('images/default-avatar.png');
+            $jabatanPejabat = $pejabat?->jabatan ?? '-';
+            $instansiPejabat = $pejabat?->instansi ?? '-';
+            $provinsiPejabat = $pejabat?->provinsi ?? '-';
+            $fotoPelapor = $rtRw && $rtRw->foto && \Illuminate\Support\Facades\Storage::disk('public')->exists($rtRw->foto)
+                            ? asset('storage/'.$rtRw->foto)
+                            : asset('images/default-avatar.png');
+            $tanggalTanggapan = \Carbon\Carbon::parse($tanggapan->tanggal_selesai ?? $tanggapan->created_at)->format('d M Y');
+        @endphp
 
-                                    <span class="small fw-semibold">Jabatan:</span> {{ $tanggapan->jabatan ?? '-' }}<br>
-                                    <span class="small fw-semibold">Tanggal selesai:</span> {{ \Carbon\Carbon::parse($tanggapan->tanggal_selesai)->format('d M Y') }}
-                                </div>
+        <div class="col-md-3">
+            <a href="{{ route('laporan.show', $laporan->id) }}" class="text-decoration-none text-dark">
+                <div class="card card-wow h-100">
+                    {{-- Foto Tanggapan --}}
+                    @if($tanggapan->foto)
+                        <img src="{{ asset('storage/'.$tanggapan->foto) }}"
+                             class="img-hover w-100"
+                             style="height:180px; object-fit:cover;">
+                    @else
+                        <div class="bg-light d-flex align-items-center justify-content-center"
+                             style="height:180px;">
+                            <span class="text-muted small">Tidak ada foto</span>
+                        </div>
+                    @endif
+
+                    <div class="card-body d-flex flex-column">
+                        {{-- Judul Laporan --}}
+                        <h6 class="fw-bold mb-2" style="color:#000;">
+                            {{ Str::limit($laporan->judul, 45) }}
+                        </h6>
+
+                        {{-- Deskripsi Tanggapan --}}
+                        <p class="small text-muted mb-2">
+                            {{ Str::limit($tanggapan->isi, 60) }}
+                        </p>
+
+                        {{-- Pelapor --}}
+                        <div class="d-flex align-items-center mb-2">
+                            <img src="{{ $fotoPelapor }}" class="rounded-circle me-2 border" width="32" height="32" style="object-fit:cover;">
+                            <div class="small text-muted">{{ $laporan->user?->name ?? 'Anonim' }} | {{ $provinsiPelapor }}</div>
+                        </div>
+
+                        {{-- Pejabat --}}
+                        <div class="d-flex align-items-center mb-2">
+                            <img src="{{ $fotoPejabat }}" class="rounded-circle me-2 border" width="32" height="32" style="object-fit:cover;">
+                            <div class="small text-muted">
+                                {{ $jabatanPejabat }} | {{ $instansiPejabat }} | {{ $provinsiPejabat }}
                             </div>
-                        </a>
+                        </div>
+
+                        {{-- Tanggal --}}
+                        <div class="mt-auto">
+                            <small class="text-muted d-flex justify-content-end align-items-center">
+                                <i class="bi bi-calendar-event me-1"></i>
+                                {{ $tanggalTanggapan }}
+                            </small>
+                        </div>
                     </div>
-                @endif
-            @empty
-                <div class="col-12 text-center">
-                    <p class="text-muted">Belum ada tanggapan saat ini.</p>
                 </div>
-            @endforelse
+            </a>
+        </div>
+    @endif
+@empty
+    <div class="col-12 text-center text-muted">Belum ada tanggapan.</div>
+@endforelse
+
         </div>
     </div>
 </section>
+
 
 @endsection

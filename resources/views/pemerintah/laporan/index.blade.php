@@ -5,7 +5,6 @@
 
     <h2 class="mb-4 fw-bold">Daftar Laporan</h2>
 
-    {{-- Form Search --}}
     <form action="{{ route('laporan') }}" method="GET" class="mb-4">
         <div class="input-group">
             <input type="text" name="search" class="form-control" 
@@ -81,7 +80,6 @@
             @endforeach
         </div>
 
-        {{-- Pagination --}}
         <div class="mt-4 d-flex justify-content-center">
             {{ $laporans->withQueryString()->links() }}
         </div>
