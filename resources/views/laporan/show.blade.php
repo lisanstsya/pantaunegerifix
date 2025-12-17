@@ -30,9 +30,10 @@
                 $tanggalLaporan = \Carbon\Carbon::parse($laporan->created_at)->format('d M Y');
                 $tanggalKejadian = \Carbon\Carbon::parse($laporan->tanggal_kejadian)->format('d M Y');
                 $canModifyLaporan = auth()->check() &&
-                                    auth()->user()->role === 'rt_rw' &&
-                                    auth()->user()->id === $laporan->user_id &&
-                                    now()->diffInHours($laporan->created_at) <= 72;
+                    auth()->user()->role === 'rt_rw' &&
+                    auth()->user()->id === $laporan->user_id &&
+                    now()->diffInHours($laporan->created_at) <= 72 &&
+                    $laporan->tanggapans->count() == 0;
             @endphp
 
             <div class="d-flex align-items-center mb-3 border rounded p-2 bg-light">
